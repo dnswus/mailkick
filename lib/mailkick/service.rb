@@ -13,6 +13,8 @@ module Mailkick
             reason: api_data[:reason],
             time: time
           )
+        elsif opt_out && time < opt_out.updated_at && !opt_out.active
+          remove_opt_out(email, api_data[:reason])
         end
       end
 

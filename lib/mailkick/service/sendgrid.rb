@@ -29,6 +29,17 @@ module Mailkick
         !!(defined?(::SendgridToolkit) && ENV["SENDGRID_USERNAME"] && ENV["SENDGRID_PASSWORD"])
       end
 
+      def remove_opt_out(email, reason)
+        case reason
+        when "unsubscribe"
+          remove(::SendgridToolkit::Unsubscribes, email)
+        when "spam"
+          remove(::SendgridToolkit::SpamReports, email)
+        when "bounce"
+          remove(::SendgridToolkit::Bounces, email)
+        end
+      end
+
       protected
 
       def fetch(klass, reason)
@@ -39,6 +50,10 @@ module Mailkick
             reason: reason
           }
         end
+      end
+
+      def remove(klass, email)
+        klass.new(@api_user, @api_key).delete({ email: email })
       end
     end
   end
